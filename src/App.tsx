@@ -3,7 +3,6 @@ import { ActionsProvider } from '@/context/ActionsContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Layout } from '@/components/Layout';
 import DashboardOverview from '@/pages/DashboardOverview';
-import { WorkflowPlaceholders } from '@/components/WorkflowPlaceholders';
 import AdminPage from '@/pages/AdminPage';
 import MitarbeiterverwaltungPage from '@/pages/MitarbeiterverwaltungPage';
 import SchichtdefinitionenPage from '@/pages/SchichtdefinitionenPage';
@@ -18,7 +17,7 @@ export default function App() {
         <ActionsProvider>
           <Routes>
             <Route element={<Layout />}>
-              <Route index element={<><div className="mb-8"><WorkflowPlaceholders /></div><DashboardOverview /></>} />
+              <Route index element={<DashboardOverview />} />
               <Route path="mitarbeiterverwaltung" element={<MitarbeiterverwaltungPage />} />
               <Route path="schichtdefinitionen" element={<SchichtdefinitionenPage />} />
               <Route path="schichtplanung" element={<SchichtplanungPage />} />
