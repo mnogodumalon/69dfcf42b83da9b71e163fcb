@@ -13,9 +13,7 @@ import { AI_PHOTO_SCAN } from '@/config/ai-features';
 import {
   IconAlertCircle, IconTool, IconRefresh, IconCheck,
   IconPlus, IconPencil, IconTrash, IconChevronLeft, IconChevronRight,
-  IconUsers, IconCalendar, IconClock, IconLayoutGrid,
 } from '@tabler/icons-react';
-import { StatCard } from '@/components/StatCard';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { SchichtplanungDialog } from '@/components/dialogs/SchichtplanungDialog';
 
@@ -125,12 +123,6 @@ export default function DashboardOverview() {
 
   const today = toDateString(new Date());
 
-  // Stats
-  const totalMitarbeiter = mitarbeiterverwaltung.length;
-  const totalSchichten = schichtdefinitionen.length;
-  const weekSchichten = weekEntries.length;
-  const vertretungen = weekEntries.filter(e => e.fields.vertretung).length;
-
   if (loading) return <DashboardSkeleton />;
   if (error) return <DashboardError error={error} onRetry={fetchAll} />;
 
@@ -184,34 +176,6 @@ export default function DashboardOverview() {
 
   return (
     <div className="space-y-6">
-      {/* KPI-Zeile */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard
-          title="Mitarbeiter"
-          value={String(totalMitarbeiter)}
-          description="Aktive Mitarbeiter"
-          icon={<IconUsers size={18} className="text-muted-foreground" />}
-        />
-        <StatCard
-          title="Schichtarten"
-          value={String(totalSchichten)}
-          description="Definierte Schichten"
-          icon={<IconClock size={18} className="text-muted-foreground" />}
-        />
-        <StatCard
-          title="Diese Woche"
-          value={String(weekSchichten)}
-          description="Geplante Einsätze"
-          icon={<IconCalendar size={18} className="text-muted-foreground" />}
-        />
-        <StatCard
-          title="Vertretungen"
-          value={String(vertretungen)}
-          description="Diese Woche"
-          icon={<IconLayoutGrid size={18} className="text-muted-foreground" />}
-        />
-      </div>
-
       {/* Wochen-Navigator + Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
@@ -473,9 +437,6 @@ export default function DashboardOverview() {
 function DashboardSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
-      </div>
       <div className="flex items-center justify-between">
         <Skeleton className="h-8 w-56" />
         <Skeleton className="h-9 w-36" />
