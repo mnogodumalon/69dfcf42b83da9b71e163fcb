@@ -1,25 +1,25 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Mitarbeiterverwaltung, Schichtdefinitionen, Schichtplanung } from '@/types/app';
+import type { Mitarbeiterverwaltung, Schichtplanung, Schichtdefinitionen } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 
 export function useDashboardData() {
   const [mitarbeiterverwaltung, setMitarbeiterverwaltung] = useState<Mitarbeiterverwaltung[]>([]);
-  const [schichtdefinitionen, setSchichtdefinitionen] = useState<Schichtdefinitionen[]>([]);
   const [schichtplanung, setSchichtplanung] = useState<Schichtplanung[]>([]);
+  const [schichtdefinitionen, setSchichtdefinitionen] = useState<Schichtdefinitionen[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [mitarbeiterverwaltungData, schichtdefinitionenData, schichtplanungData] = await Promise.all([
+      const [mitarbeiterverwaltungData, schichtplanungData, schichtdefinitionenData] = await Promise.all([
         LivingAppsService.getMitarbeiterverwaltung(),
-        LivingAppsService.getSchichtdefinitionen(),
         LivingAppsService.getSchichtplanung(),
+        LivingAppsService.getSchichtdefinitionen(),
       ]);
       setMitarbeiterverwaltung(mitarbeiterverwaltungData);
-      setSchichtdefinitionen(schichtdefinitionenData);
       setSchichtplanung(schichtplanungData);
+      setSchichtdefinitionen(schichtdefinitionenData);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Fehler beim Laden der Daten'));
     } finally {
@@ -33,14 +33,14 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [mitarbeiterverwaltungData, schichtdefinitionenData, schichtplanungData] = await Promise.all([
+        const [mitarbeiterverwaltungData, schichtplanungData, schichtdefinitionenData] = await Promise.all([
           LivingAppsService.getMitarbeiterverwaltung(),
-          LivingAppsService.getSchichtdefinitionen(),
           LivingAppsService.getSchichtplanung(),
+          LivingAppsService.getSchichtdefinitionen(),
         ]);
         setMitarbeiterverwaltung(mitarbeiterverwaltungData);
-        setSchichtdefinitionen(schichtdefinitionenData);
         setSchichtplanung(schichtplanungData);
+        setSchichtdefinitionen(schichtdefinitionenData);
       } catch {
         // silently ignore — stale data is better than no data
       }
@@ -62,5 +62,5 @@ export function useDashboardData() {
     return m;
   }, [schichtdefinitionen]);
 
-  return { mitarbeiterverwaltung, setMitarbeiterverwaltung, schichtdefinitionen, setSchichtdefinitionen, schichtplanung, setSchichtplanung, loading, error, fetchAll, mitarbeiterverwaltungMap, schichtdefinitionenMap };
+  return { mitarbeiterverwaltung, setMitarbeiterverwaltung, schichtplanung, setSchichtplanung, schichtdefinitionen, setSchichtdefinitionen, loading, error, fetchAll, mitarbeiterverwaltungMap, schichtdefinitionenMap };
 }

@@ -1,5 +1,0 @@
-- Mitarbeiterverwaltung (mitarbeiterverwaltung): vorname[string/text], nachname[string/text], personalnummer[string/text], abteilung[string/text], telefon[string/tel], email[string/email], beschaeftigungsart[lookup/radio], bemerkung[string/textarea]
-- Schichtdefinitionen (schichtdefinitionen): schichtname[string/text], schichtbeginn[string/text], schichtende[string/text], schichtkategorie[lookup/select], schichtbeschreibung[string/textarea]
-- Schichtplanung (schichtplanung): datum[date/date], wochentag[lookup/select], mitarbeiter[applookup/select], schicht[applookup/select], einsatzbereich[string/text], vertretung[bool], notizen[string/textarea]
-  → mitarbeiter links to app_id 69dfcf2420b9dd0739d9ef2d
-  → schicht links to app_id 69dfcf2a89f27c78cdb064ed

@@ -1,13 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import type { Mitarbeiterverwaltung, Schichtdefinitionen, Schichtplanung } from '@/types/app';
+import type { Mitarbeiterverwaltung, Schichtplanung, Schichtdefinitionen } from '@/types/app';
 import { LivingAppsService, extractRecordId, cleanFieldsForApi } from '@/services/livingAppsService';
 import { MitarbeiterverwaltungDialog } from '@/components/dialogs/MitarbeiterverwaltungDialog';
 import { MitarbeiterverwaltungViewDialog } from '@/components/dialogs/MitarbeiterverwaltungViewDialog';
-import { SchichtdefinitionenDialog } from '@/components/dialogs/SchichtdefinitionenDialog';
-import { SchichtdefinitionenViewDialog } from '@/components/dialogs/SchichtdefinitionenViewDialog';
 import { SchichtplanungDialog } from '@/components/dialogs/SchichtplanungDialog';
 import { SchichtplanungViewDialog } from '@/components/dialogs/SchichtplanungViewDialog';
+import { SchichtdefinitionenDialog } from '@/components/dialogs/SchichtdefinitionenDialog';
+import { SchichtdefinitionenViewDialog } from '@/components/dialogs/SchichtdefinitionenViewDialog';
 import { BulkEditDialog } from '@/components/dialogs/BulkEditDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageShell } from '@/components/PageShell';
@@ -44,13 +44,6 @@ const MITARBEITERVERWALTUNG_FIELDS = [
   { key: 'beschaeftigungsart', label: 'Beschäftigungsart', type: 'lookup/radio', options: [{ key: 'vollzeit', label: 'Vollzeit' }, { key: 'teilzeit', label: 'Teilzeit' }, { key: 'minijob', label: 'Minijob' }, { key: 'aushilfe', label: 'Aushilfe' }] },
   { key: 'bemerkung', label: 'Bemerkung', type: 'string/textarea' },
 ];
-const SCHICHTDEFINITIONEN_FIELDS = [
-  { key: 'schichtname', label: 'Schichtname', type: 'string/text' },
-  { key: 'schichtbeginn', label: 'Schichtbeginn', type: 'string/text' },
-  { key: 'schichtende', label: 'Schichtende', type: 'string/text' },
-  { key: 'schichtkategorie', label: 'Schichtkategorie', type: 'lookup/select', options: [{ key: 'fruehschicht', label: 'Frühschicht' }, { key: 'spaetschicht', label: 'Spätschicht' }, { key: 'nachtschicht', label: 'Nachtschicht' }, { key: 'tagschicht', label: 'Tagschicht' }, { key: 'sonderschicht', label: 'Sonderschicht' }] },
-  { key: 'schichtbeschreibung', label: 'Beschreibung', type: 'string/textarea' },
-];
 const SCHICHTPLANUNG_FIELDS = [
   { key: 'datum', label: 'Datum', type: 'date/date' },
   { key: 'wochentag', label: 'Wochentag', type: 'lookup/select', options: [{ key: 'dienstag', label: 'Dienstag' }, { key: 'mittwoch', label: 'Mittwoch' }, { key: 'donnerstag', label: 'Donnerstag' }, { key: 'freitag', label: 'Freitag' }, { key: 'samstag', label: 'Samstag' }, { key: 'sonntag', label: 'Sonntag' }, { key: 'montag', label: 'Montag' }] },
@@ -60,11 +53,18 @@ const SCHICHTPLANUNG_FIELDS = [
   { key: 'vertretung', label: 'Vertretung', type: 'bool' },
   { key: 'notizen', label: 'Notizen', type: 'string/textarea' },
 ];
+const SCHICHTDEFINITIONEN_FIELDS = [
+  { key: 'schichtname', label: 'Schichtname', type: 'string/text' },
+  { key: 'schichtbeginn', label: 'Schichtbeginn', type: 'string/text' },
+  { key: 'schichtende', label: 'Schichtende', type: 'string/text' },
+  { key: 'schichtkategorie', label: 'Schichtkategorie', type: 'lookup/select', options: [{ key: 'fruehschicht', label: 'Frühschicht' }, { key: 'spaetschicht', label: 'Spätschicht' }, { key: 'nachtschicht', label: 'Nachtschicht' }, { key: 'tagschicht', label: 'Tagschicht' }, { key: 'sonderschicht', label: 'Sonderschicht' }] },
+  { key: 'schichtbeschreibung', label: 'Beschreibung', type: 'string/textarea' },
+];
 
 const ENTITY_TABS = [
   { key: 'mitarbeiterverwaltung', label: 'Mitarbeiterverwaltung', pascal: 'Mitarbeiterverwaltung' },
-  { key: 'schichtdefinitionen', label: 'Schichtdefinitionen', pascal: 'Schichtdefinitionen' },
   { key: 'schichtplanung', label: 'Schichtplanung', pascal: 'Schichtplanung' },
+  { key: 'schichtdefinitionen', label: 'Schichtdefinitionen', pascal: 'Schichtdefinitionen' },
 ] as const;
 
 type EntityKey = typeof ENTITY_TABS[number]['key'];
@@ -76,13 +76,13 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<EntityKey>('mitarbeiterverwaltung');
   const [selectedIds, setSelectedIds] = useState<Record<EntityKey, Set<string>>>(() => ({
     'mitarbeiterverwaltung': new Set(),
-    'schichtdefinitionen': new Set(),
     'schichtplanung': new Set(),
+    'schichtdefinitionen': new Set(),
   }));
   const [filters, setFilters] = useState<Record<EntityKey, Record<string, string>>>(() => ({
     'mitarbeiterverwaltung': {},
-    'schichtdefinitionen': {},
     'schichtplanung': {},
+    'schichtdefinitionen': {},
   }));
   const [showFilters, setShowFilters] = useState(false);
   const [dialogState, setDialogState] = useState<{ entity: EntityKey; record: any } | null>(null);
@@ -98,8 +98,8 @@ export default function AdminPage() {
   const getRecords = useCallback((entity: EntityKey) => {
     switch (entity) {
       case 'mitarbeiterverwaltung': return (data as any).mitarbeiterverwaltung as Mitarbeiterverwaltung[] ?? [];
-      case 'schichtdefinitionen': return (data as any).schichtdefinitionen as Schichtdefinitionen[] ?? [];
       case 'schichtplanung': return (data as any).schichtplanung as Schichtplanung[] ?? [];
+      case 'schichtdefinitionen': return (data as any).schichtdefinitionen as Schichtdefinitionen[] ?? [];
       default: return [];
     }
   }, [data]);
@@ -135,8 +135,8 @@ export default function AdminPage() {
   const getFieldMeta = useCallback((entity: EntityKey) => {
     switch (entity) {
       case 'mitarbeiterverwaltung': return MITARBEITERVERWALTUNG_FIELDS;
-      case 'schichtdefinitionen': return SCHICHTDEFINITIONEN_FIELDS;
       case 'schichtplanung': return SCHICHTPLANUNG_FIELDS;
+      case 'schichtdefinitionen': return SCHICHTDEFINITIONEN_FIELDS;
       default: return [];
     }
   }, []);
@@ -236,15 +236,15 @@ export default function AdminPage() {
         update: (id: string, fields: any) => LivingAppsService.updateMitarbeiterverwaltungEntry(id, fields),
         remove: (id: string) => LivingAppsService.deleteMitarbeiterverwaltungEntry(id),
       };
-      case 'schichtdefinitionen': return {
-        create: (fields: any) => LivingAppsService.createSchichtdefinitionenEntry(fields),
-        update: (id: string, fields: any) => LivingAppsService.updateSchichtdefinitionenEntry(id, fields),
-        remove: (id: string) => LivingAppsService.deleteSchichtdefinitionenEntry(id),
-      };
       case 'schichtplanung': return {
         create: (fields: any) => LivingAppsService.createSchichtplanungEntry(fields),
         update: (id: string, fields: any) => LivingAppsService.updateSchichtplanungEntry(id, fields),
         remove: (id: string) => LivingAppsService.deleteSchichtplanungEntry(id),
+      };
+      case 'schichtdefinitionen': return {
+        create: (fields: any) => LivingAppsService.createSchichtdefinitionenEntry(fields),
+        update: (id: string, fields: any) => LivingAppsService.updateSchichtdefinitionenEntry(id, fields),
+        remove: (id: string) => LivingAppsService.deleteSchichtdefinitionenEntry(id),
       };
       default: return null;
     }
@@ -583,16 +583,6 @@ export default function AdminPage() {
           enablePhotoLocation={AI_PHOTO_LOCATION['Mitarbeiterverwaltung']}
         />
       )}
-      {(createEntity === 'schichtdefinitionen' || dialogState?.entity === 'schichtdefinitionen') && (
-        <SchichtdefinitionenDialog
-          open={createEntity === 'schichtdefinitionen' || dialogState?.entity === 'schichtdefinitionen'}
-          onClose={() => { setCreateEntity(null); setDialogState(null); }}
-          onSubmit={dialogState?.entity === 'schichtdefinitionen' ? handleUpdate : (fields: any) => handleCreate('schichtdefinitionen', fields)}
-          defaultValues={dialogState?.entity === 'schichtdefinitionen' ? dialogState.record?.fields : undefined}
-          enablePhotoScan={AI_PHOTO_SCAN['Schichtdefinitionen']}
-          enablePhotoLocation={AI_PHOTO_LOCATION['Schichtdefinitionen']}
-        />
-      )}
       {(createEntity === 'schichtplanung' || dialogState?.entity === 'schichtplanung') && (
         <SchichtplanungDialog
           open={createEntity === 'schichtplanung' || dialogState?.entity === 'schichtplanung'}
@@ -605,20 +595,22 @@ export default function AdminPage() {
           enablePhotoLocation={AI_PHOTO_LOCATION['Schichtplanung']}
         />
       )}
+      {(createEntity === 'schichtdefinitionen' || dialogState?.entity === 'schichtdefinitionen') && (
+        <SchichtdefinitionenDialog
+          open={createEntity === 'schichtdefinitionen' || dialogState?.entity === 'schichtdefinitionen'}
+          onClose={() => { setCreateEntity(null); setDialogState(null); }}
+          onSubmit={dialogState?.entity === 'schichtdefinitionen' ? handleUpdate : (fields: any) => handleCreate('schichtdefinitionen', fields)}
+          defaultValues={dialogState?.entity === 'schichtdefinitionen' ? dialogState.record?.fields : undefined}
+          enablePhotoScan={AI_PHOTO_SCAN['Schichtdefinitionen']}
+          enablePhotoLocation={AI_PHOTO_LOCATION['Schichtdefinitionen']}
+        />
+      )}
       {viewState?.entity === 'mitarbeiterverwaltung' && (
         <MitarbeiterverwaltungViewDialog
           open={viewState?.entity === 'mitarbeiterverwaltung'}
           onClose={() => setViewState(null)}
           record={viewState?.record}
           onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'mitarbeiterverwaltung', record: r }); }}
-        />
-      )}
-      {viewState?.entity === 'schichtdefinitionen' && (
-        <SchichtdefinitionenViewDialog
-          open={viewState?.entity === 'schichtdefinitionen'}
-          onClose={() => setViewState(null)}
-          record={viewState?.record}
-          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'schichtdefinitionen', record: r }); }}
         />
       )}
       {viewState?.entity === 'schichtplanung' && (
@@ -629,6 +621,14 @@ export default function AdminPage() {
           onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'schichtplanung', record: r }); }}
           mitarbeiterverwaltungList={(data as any).mitarbeiterverwaltung ?? []}
           schichtdefinitionenList={(data as any).schichtdefinitionen ?? []}
+        />
+      )}
+      {viewState?.entity === 'schichtdefinitionen' && (
+        <SchichtdefinitionenViewDialog
+          open={viewState?.entity === 'schichtdefinitionen'}
+          onClose={() => setViewState(null)}
+          record={viewState?.record}
+          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'schichtdefinitionen', record: r }); }}
         />
       )}
 

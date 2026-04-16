@@ -5,8 +5,8 @@ import { Layout } from '@/components/Layout';
 import DashboardOverview from '@/pages/DashboardOverview';
 import AdminPage from '@/pages/AdminPage';
 import MitarbeiterverwaltungPage from '@/pages/MitarbeiterverwaltungPage';
-import SchichtdefinitionenPage from '@/pages/SchichtdefinitionenPage';
 import SchichtplanungPage from '@/pages/SchichtplanungPage';
+import SchichtdefinitionenPage from '@/pages/SchichtdefinitionenPage';
 // <custom:imports>
 // </custom:imports>
 
@@ -19,8 +19,8 @@ export default function App() {
             <Route element={<Layout />}>
               <Route index element={<DashboardOverview />} />
               <Route path="mitarbeiterverwaltung" element={<MitarbeiterverwaltungPage />} />
-              <Route path="schichtdefinitionen" element={<SchichtdefinitionenPage />} />
               <Route path="schichtplanung" element={<SchichtplanungPage />} />
+              <Route path="schichtdefinitionen" element={<SchichtdefinitionenPage />} />
               <Route path="admin" element={<AdminPage />} />
               {/* <custom:routes> */}
               {/* </custom:routes> */}

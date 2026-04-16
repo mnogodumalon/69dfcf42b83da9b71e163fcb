@@ -19,19 +19,6 @@ export interface Mitarbeiterverwaltung {
   };
 }
 
-export interface Schichtdefinitionen {
-  record_id: string;
-  createdat: string;
-  updatedat: string | null;
-  fields: {
-    schichtname?: string;
-    schichtbeginn?: string;
-    schichtende?: string;
-    schichtkategorie?: LookupValue;
-    schichtbeschreibung?: string;
-  };
-}
-
 export interface Schichtplanung {
   record_id: string;
   createdat: string;
@@ -47,10 +34,23 @@ export interface Schichtplanung {
   };
 }
 
+export interface Schichtdefinitionen {
+  record_id: string;
+  createdat: string;
+  updatedat: string | null;
+  fields: {
+    schichtname?: string;
+    schichtbeginn?: string;
+    schichtende?: string;
+    schichtkategorie?: LookupValue;
+    schichtbeschreibung?: string;
+  };
+}
+
 export const APP_IDS = {
   MITARBEITERVERWALTUNG: '69dfcf2420b9dd0739d9ef2d',
-  SCHICHTDEFINITIONEN: '69dfcf2a89f27c78cdb064ed',
   SCHICHTPLANUNG: '69dfcf2b9958ccbd1df5185a',
+  SCHICHTDEFINITIONEN: '69dfcf2a89f27c78cdb064ed',
 } as const;
 
 
@@ -58,11 +58,11 @@ export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: 
   'mitarbeiterverwaltung': {
     beschaeftigungsart: [{ key: "vollzeit", label: "Vollzeit" }, { key: "teilzeit", label: "Teilzeit" }, { key: "minijob", label: "Minijob" }, { key: "aushilfe", label: "Aushilfe" }],
   },
-  'schichtdefinitionen': {
-    schichtkategorie: [{ key: "fruehschicht", label: "Frühschicht" }, { key: "spaetschicht", label: "Spätschicht" }, { key: "nachtschicht", label: "Nachtschicht" }, { key: "tagschicht", label: "Tagschicht" }, { key: "sonderschicht", label: "Sonderschicht" }],
-  },
   'schichtplanung': {
     wochentag: [{ key: "dienstag", label: "Dienstag" }, { key: "mittwoch", label: "Mittwoch" }, { key: "donnerstag", label: "Donnerstag" }, { key: "freitag", label: "Freitag" }, { key: "samstag", label: "Samstag" }, { key: "sonntag", label: "Sonntag" }, { key: "montag", label: "Montag" }],
+  },
+  'schichtdefinitionen': {
+    schichtkategorie: [{ key: "fruehschicht", label: "Frühschicht" }, { key: "spaetschicht", label: "Spätschicht" }, { key: "nachtschicht", label: "Nachtschicht" }, { key: "tagschicht", label: "Tagschicht" }, { key: "sonderschicht", label: "Sonderschicht" }],
   },
 };
 
@@ -77,13 +77,6 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'beschaeftigungsart': 'lookup/radio',
     'bemerkung': 'string/textarea',
   },
-  'schichtdefinitionen': {
-    'schichtname': 'string/text',
-    'schichtbeginn': 'string/text',
-    'schichtende': 'string/text',
-    'schichtkategorie': 'lookup/select',
-    'schichtbeschreibung': 'string/textarea',
-  },
   'schichtplanung': {
     'datum': 'date/date',
     'wochentag': 'lookup/select',
@@ -92,6 +85,13 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'einsatzbereich': 'string/text',
     'vertretung': 'bool',
     'notizen': 'string/textarea',
+  },
+  'schichtdefinitionen': {
+    'schichtname': 'string/text',
+    'schichtbeginn': 'string/text',
+    'schichtende': 'string/text',
+    'schichtkategorie': 'lookup/select',
+    'schichtbeschreibung': 'string/textarea',
   },
 };
 
@@ -103,5 +103,5 @@ type StripLookup<T> = {
 
 // Helper Types for creating new records (lookup fields as plain strings for API)
 export type CreateMitarbeiterverwaltung = StripLookup<Mitarbeiterverwaltung['fields']>;
-export type CreateSchichtdefinitionen = StripLookup<Schichtdefinitionen['fields']>;
 export type CreateSchichtplanung = StripLookup<Schichtplanung['fields']>;
+export type CreateSchichtdefinitionen = StripLookup<Schichtdefinitionen['fields']>;
